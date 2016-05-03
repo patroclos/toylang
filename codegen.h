@@ -25,6 +25,7 @@ class CodeGenBlock
 {
 public:
     BasicBlock *block;
+    Value *returnValue;
     std::map<std::string, Value *> locals;
 };
 
@@ -52,4 +53,6 @@ public:
         blocks.pop();
         delete top;
     }
+    void setCurrentReturnValue(Value *value) { blocks.top()->returnValue = value; }
+    Value *getCurrentReturnValue() { return blocks.top()->returnValue; }
 };

@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     if(!programBlock)
     {
         std::cout << "ERROR: could not parse code. exiting..." << std::endl;
-        return 1; 
+        return 1;
     }
 
     context.generateCode(*programBlock);

@@ -95,6 +95,13 @@ public:
     virtual llvm::Value *codeGen( CodeGenContext &context );
 };
 
+class NReturnStatement : public NStatement {
+public:
+    NExpression &expression;
+    NReturnStatement( NExpression &expression ) : expression( expression ) {}
+    virtual llvm::Value *codeGen(CodeGenContext &context);
+};
+
 class NVariableDeclaration : public NStatement
 {
 public:
@@ -104,6 +111,15 @@ public:
     NVariableDeclaration( const NIdentifier &type, NIdentifier &id ) : type( type ), id( id ) {}
     NVariableDeclaration( const NIdentifier &type, NIdentifier &id, NExpression *assignmentExpr ) : type( type ), id( id ), assignmentExpr( assignmentExpr ) {}
     virtual llvm::Value *codeGen( CodeGenContext &context );
+};
+
+class NExternDeclaration : public NStatement {
+public:
+    const NIdentifier &type;
+    const NIdentifier &id;
+    VariableList arguments;
+    NExternDeclaration(const NIdentifier &type, NIdentifier &id, const VariableList &arguments) : type(type), id(id), arguments(arguments) {}
+    virtual llvm::Value *codeGen(CodeGenContext &context);
 };
 
 class NFunctionDeclaration : public NStatement
