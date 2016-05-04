@@ -10,10 +10,8 @@ void CodeGenContext::generateCode( NBlock &root )
     std::cout << "Generating code...\n";
 
     /* Create the top level interpreter function to call as entry */
-    const vector<Type *> argTypes;
-    ArrayRef<Type *> params( argTypes );
-    FunctionType *ftype = FunctionType::get( Type::getInt64Ty(getGlobalContext()), params, false );
-    mainFunction = Function::Create( ftype, GlobalValue::InternalLinkage, "main", module );
+    FunctionType *ftype = FunctionType::get( Type::getInt64Ty(getGlobalContext()), false );
+    mainFunction = Function::Create( ftype, Function::ExternalLinkage, "main", module );
     BasicBlock *bblock = BasicBlock::Create( getGlobalContext(), "entry", mainFunction, 0 );
 
     /* Push a new variable/block context */
