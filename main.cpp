@@ -21,7 +21,11 @@ int main(int argc, char **argv)
     }
 
     context.generateCode(*programBlock);
-    context.runCode();
+    //context.runCode();
 
+    std::cout << "Saving bytecode to code.ll" << std::endl;
+    FILE *file = fopen("code.ll", "w");
+    llvm::raw_fd_ostream stream(fileno(file), true);
+    llvm::WriteBitcodeToFile(context.module, stream);
     return 0;
 }

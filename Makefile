@@ -9,6 +9,6 @@ tokens.cpp: tokens.l
 parser.cpp: parser.y
 	bison -d -o parser.cpp parser.y
 $(BIN): *.cpp
-	g++ -g -std=c++11 -o $(BIN) *.cpp `llvm-config --libs core jit native --cxxflags --ldflags --system-libs`
+	g++ -g -std=c++11 -o $(BIN) *.cpp `llvm-config --libs core jit native bitwriter --cxxflags --ldflags --system-libs`
 clean:
 	rm tokens.cpp parser.cpp parser.hpp $(BIN)
