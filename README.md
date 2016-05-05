@@ -31,4 +31,6 @@ JayJay is a simple compiled programming language developed for the lulz
 
 ## Roadmap ##
 - implement if/else
-- more types like strings and pointers
+- more types like chars, arrays and pointers
+- loops
+- make compiler to output native executable instead of IR bitcode
