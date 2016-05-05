@@ -53,7 +53,16 @@ static Type *typeOf( const NIdentifier &type )
     {
         return Type::getDoubleTy( getGlobalContext() );
     }
-    return Type::getVoidTy( getGlobalContext() );
+    else if ( type.name.compare( "void" ) == 0 )
+    {
+        return Type::getVoidTy( getGlobalContext() );
+    }
+    else
+    {
+        std::cerr << "ERR: type not found: " << type.name << std::endl;
+        abort();
+    }
+    //return Type::getVoidTy( getGlobalContext() );
 }
 
 /* -- Code Generation -- */
@@ -189,7 +198,7 @@ Value *NExternDeclaration::codeGen( CodeGenContext &context )
     }
     const vector<Type *> cargTypes( argTypes );
     FunctionType *ftype = FunctionType::get( typeOf( type ), cargTypes, false );
-    Function *function = Function::Create( ftype, GlobalValue::ExternalLinkage, id.name.c_str(), context.module );
+    Function *function = Function::Create( ftype, Function::ExternalLinkage, id.name.c_str(), context.module );
     return function;
 }
 
