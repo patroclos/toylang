@@ -1,6 +1,6 @@
-## JayJay - the new big thing ##
+## ToyLang - the new big thing ##
 
-JayJay is a simple compiled programming language developed for the lulz
+ToyLang is a simple compiled programming language developed for the lulz
 
 ## Syntax ##
 
@@ -30,7 +30,6 @@ JayJay is a simple compiled programming language developed for the lulz
 
 
 ## Roadmap ##
-- implement if/else
 - more types like chars, arrays and pointers
 - loops
 - make compiler to output native executable instead of IR bitcode
