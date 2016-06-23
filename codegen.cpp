@@ -10,14 +10,16 @@ void CodeGenContext::generateCode( NBlock &root )
     std::cout << "Generating code...\n";
 
     /* Create the top level interpreter function to call as entry */
-    FunctionType *ftype = FunctionType::get( Type::getInt64Ty(getGlobalContext()), false );
+    FunctionType *ftype = FunctionType::get( Type::getInt64Ty( getGlobalContext() ), false );
     mainFunction = Function::Create( ftype, Function::ExternalLinkage, "main", module );
     BasicBlock *bblock = BasicBlock::Create( getGlobalContext(), "entry", mainFunction, 0 );
 
     /* Push a new variable/block context */
     pushBlock( bblock );
+    pushParentFunction( mainFunction );
     root.codeGen( *this ); /* emit bytecode for the toplevel block */
-    ReturnInst::Create( getGlobalContext(), getCurrentReturnValue(), bblock );
+    //ReturnInst::Create( getGlobalContext(), getCurrentReturnValue(), currentBlock() );
+    popParentFunction();
     popBlock();
 
     /* Print the bytecode in a human-readable format
@@ -172,7 +174,33 @@ Value *NReturnStatement::codeGen( CodeGenContext &context )
     std::cout << "Generating return code for " << typeid( expression ).name() << std::endl;
     Value *returnValue = expression.codeGen( context );
     context.setCurrentReturnValue( returnValue );
+    ReturnInst *ret = ReturnInst::Create( getGlobalContext(), returnValue, context.currentBlock() );
     return returnValue;
+}
+
+Value *NIfExpression::codeGen( CodeGenContext &context )
+{
+    std::cout << "Creating if statement" << std::endl;
+    Value *condition = expression.codeGen( context );
+
+    BasicBlock *bblock = BasicBlock::Create( getGlobalContext(), "if", context.getParentFunction(), nullptr );
+    bblock->moveAfter( context.currentBlock() );
+
+    BasicBlock *bafter = BasicBlock::Create( getGlobalContext(), "endif", context.getParentFunction(), nullptr );
+    bafter->moveAfter( bblock );
+
+    BranchInst *branch = BranchInst::Create( bblock, bafter, condition, context.currentBlock() );
+
+    context.pushBlock( bblock );
+
+    block.codeGen( context );
+
+    //branching after retinst is deadly
+    if ( !context.getCurrentReturnValue() )
+        BranchInst *endif = BranchInst::Create( bafter, context.currentBlock() );
+
+    context.popBlock();
+    context.pushBlock( bafter );
 }
 
 Value *NVariableDeclaration::codeGen( CodeGenContext &context )
@@ -216,6 +244,7 @@ Value *NFunctionDeclaration::codeGen( CodeGenContext &context )
     Function *function = Function::Create( ftype, GlobalValue::InternalLinkage, id.name.c_str(), context.module );
     BasicBlock *bblock = BasicBlock::Create( getGlobalContext(), "entry", function, 0 );
 
+    context.pushParentFunction( function );
     context.pushBlock( bblock );
 
     Function::arg_iterator argsValues = function->arg_begin();
@@ -231,9 +260,15 @@ Value *NFunctionDeclaration::codeGen( CodeGenContext &context )
     }
 
     block.codeGen( context );
-    ReturnInst::Create( getGlobalContext(), context.getCurrentReturnValue(), bblock );
+
+    while ( context.currentBlock() != bblock )
+    {
+        context.popBlock();
+    }
 
     context.popBlock();
+
+    context.popParentFunction();
     std::cout << "Creating function: " << id.name << std::endl;
     return function;
 }

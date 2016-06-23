@@ -29,6 +29,7 @@
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TCOMMA TDOT
 %token <token> TPLUS TMINUS TMUL TDIV
 %token <token> TRETURN TEXTERN
+%token <token> TIF
 
 /* Define the type of node our nonterminal symbols represent.
    The types refer to the %union declaration above. Ex: when
@@ -92,6 +93,7 @@ numeric : TINTEGER { $$ = new NInteger(atol($1->c_str())); delete $1; }
         ;
 
 expr : ident TEQUAL expr { $$ = new NAssignment(*$<ident>1, *$3); }
+     | TIF TLPAREN expr TRPAREN block { $$ = new NIfExpression(*$3, *$5); }
      | ident TLPAREN call_args TRPAREN { $$ = new NMethodCall(*$1, *$3); delete $3; }
      | ident { $<ident>$ = $1; }
      | numeric

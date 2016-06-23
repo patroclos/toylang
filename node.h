@@ -87,6 +87,15 @@ public:
     virtual llvm::Value *codeGen( CodeGenContext &context );
 };
 
+class NIfExpression : public NExpression
+{
+public:
+    NExpression &expression;
+    NBlock &block;
+    NIfExpression(NExpression &expression, NBlock &block) : expression(expression), block(block) {}
+    virtual llvm::Value *codeGen( CodeGenContext &context );
+};
+
 class NExpressionStatement : public NStatement
 {
 public:

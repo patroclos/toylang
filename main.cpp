@@ -9,6 +9,7 @@ extern NBlock* programBlock;
 
 int main(int argc, char **argv)
 {
+    std::cout << argc << ", " << argv[0] << std::endl;
     yyparse();
     std::cout << programBlock << std::endl;
 
